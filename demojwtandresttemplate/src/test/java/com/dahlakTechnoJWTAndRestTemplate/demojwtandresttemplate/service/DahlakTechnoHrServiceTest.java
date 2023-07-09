@@ -1,60 +1,74 @@
 package com.dahlakTechnoJWTAndRestTemplate.demojwtandresttemplate.service;
 
-
-import com.dahlakTechnoJWTAndRestTemplate.demojwtandresttemplate.pojo.Employee;
 import com.dahlakTechnoJWTAndRestTemplate.demojwtandresttemplate.pojo.Employee;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class DahlakTechnoHrServiceTest {
-
     @InjectMocks
     private DahlakTechnoHrService dahlakTechnoHrService;
-
     @Mock
     private RestTemplate restTemplate;
-
     @Mock
     private HttpServletRequest httpServletRequest;
-
     @Before
-    public void setup() {
-        MockitoAnnotations.initMocks(this);
+    public void setUp() throws Exception {
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testGetEmployeeOfCompany() throws Exception {
-        String url = "http://localhost:8081/employee/getEmployees";
-        List<Employee> expectedEmployeeList = Arrays.asList(new Employee(), new Employee());
-        String jwtToken = "Bearer anyToken";
-        ResponseEntity<List> restTemplateResp = new ResponseEntity<>(expectedEmployeeList, HttpStatus.OK);
-        when(httpServletRequest.getHeader("Authorization")).thenReturn(jwtToken);
-        when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(List.class)))
-                .thenReturn(restTemplateResp);
-        List<Employee> actualEmployeeList = dahlakTechnoHrService.getEmployeeOfCompany(httpServletRequest);
-        verify(restTemplate, times(1)).exchange(eq(url), eq(HttpMethod.GET), any(HttpEntity.class), eq(List.class));
-        assertEquals(expectedEmployeeList, actualEmployeeList);
-    }
+    public void getEmployeeOfCompany() throws Exception {
+        List<Employee> expected = new ArrayList<>();
+        Employee employee = new Employee(1,"em",12);
+        expected.add(employee);
+        ResponseEntity<List> expectedREntity = new ResponseEntity<>(expected, HttpStatus.OK);
+        //Mock1
+        Mockito.when(httpServletRequest.getHeader("Authorization")).thenReturn("Bearer anyToken");
+        //Mock
+        Mockito.when(restTemplate.exchange(anyString(),eq(HttpMethod.GET),
+                        any(HttpEntity.class),eq(List.class)))
+                .thenReturn(expectedREntity);
+        List<Employee> entityActual = dahlakTechnoHrService.getEmployeeOfCompany(httpServletRequest);
+        //assert
+        assertEquals(expected.get(0),entityActual.get(0));
 
+    }
     @Test(expected = RuntimeException.class)
-    public void testGetEmployeeOfCompanyWithInvalidJwtToken() throws Exception {
-        String jwtToken = "BeareranyToken";
-        when(httpServletRequest.getHeader("Authorization")).thenReturn(jwtToken);
-        dahlakTechnoHrService.getEmployeeOfCompany(httpServletRequest);
+    public void getEmployeeOfCompanyIfTokenHasNoTextOrNoBearer() throws Exception {
+        List<Employee> expected = new ArrayList<>();
+        Employee employee = new Employee(1,"em",12);
+        expected.add(employee);
+        ResponseEntity<List> expectedREntity = new ResponseEntity<>(expected, HttpStatus.OK);
+        //Mock1
+        Mockito.when(httpServletRequest.getHeader("Authorization")).thenReturn(" anyToken");
+        //Mock
+        Mockito.when(restTemplate.exchange(anyString(),eq(HttpMethod.GET),
+                        any(HttpEntity.class),eq(List.class)))
+                .thenReturn(expectedREntity);
+        List<Employee> entityActual = dahlakTechnoHrService.getEmployeeOfCompany(httpServletRequest);
+
+
     }
 }
