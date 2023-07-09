@@ -44,7 +44,7 @@ public class DahlakTechnoHrServiceTest {
         String jwtToken = "Bearer anyToken";
         ResponseEntity<List> restTemplateResp = new ResponseEntity<>(expectedEmployeeList, HttpStatus.OK);
         when(httpServletRequest.getHeader("Authorization")).thenReturn(jwtToken);
-        when(restTemplate.exchange(eq(url), eq(HttpMethod.GET), any(HttpEntity.class), eq(List.class)))
+        when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(List.class)))
                 .thenReturn(restTemplateResp);
         List<Employee> actualEmployeeList = dahlakTechnoHrService.getEmployeeOfCompany(httpServletRequest);
         verify(restTemplate, times(1)).exchange(eq(url), eq(HttpMethod.GET), any(HttpEntity.class), eq(List.class));
