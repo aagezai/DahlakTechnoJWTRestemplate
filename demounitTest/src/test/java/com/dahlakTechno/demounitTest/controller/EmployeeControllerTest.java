@@ -2,6 +2,7 @@ package com.dahlakTechno.demounitTest.controller;
 
 import com.dahlakTechno.demounitTest.model.Employee;
 import com.dahlakTechno.demounitTest.service.EmployeeService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Disabled;
@@ -29,6 +30,8 @@ public class EmployeeControllerTest {
 
     @Mock
     private EmployeeService employeeService;
+    @Mock
+    private HttpServletRequest httpServletRequest;
 
     @Before
     public void setup() {
@@ -42,9 +45,9 @@ public class EmployeeControllerTest {
                 new Employee(2, "Jane", 789012)
         );
 
-        Mockito.when(employeeService.getAllEmployees()).thenReturn(employees);
+        Mockito.when(employeeService.getAllEmployees(httpServletRequest)).thenReturn(employees);
 
-        List<Employee> result = employeeController.getAllEmployees();
+        List<Employee> result = employeeController.getAllEmployees(httpServletRequest);
 
         assertEquals(2, result.size());
         assertEquals(1, result.get(0).getId());
@@ -55,7 +58,7 @@ public class EmployeeControllerTest {
         assertEquals(789012, result.get(1).getSsn());
         assertEquals(employees.get(1),result.get(1));
 
-        verify(employeeService, times(1)).getAllEmployees();
+        verify(employeeService, times(1)).getAllEmployees(httpServletRequest);
     }
 
     @Test

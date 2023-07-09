@@ -2,6 +2,7 @@ package com.dahlakTechno.demounitTest.service;
 
 import com.dahlakTechno.demounitTest.model.Employee;
 import com.dahlakTechno.demounitTest.repository.EmployeeRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +28,8 @@ public class EmployeeServiceTest {
     private EmployeeService employeeService;
     @Mock
     private EmployeeRepository employeeRepository;
+    @Mock
+    private HttpServletRequest httpServletRequest;
 
     @Before
     public void setUp() throws Exception {
@@ -39,10 +42,11 @@ public class EmployeeServiceTest {
                 new Employee(1, "John", 123456),
                 new Employee(2, "Jane", 789012)
         );
-
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOm51bGwsImF1ZCI6ImF1ZGllbmNlIiwicHJpdmF0ZSI6eyJjdXN0b21Qcml2YXRlQ2xhaW0iOiJwcml2YXRlVmFsdWUiLCJyb2xlIjpudWxsfSwicHVibGljIjp7ImNvbXBhbnlOYW1lIjpudWxsLCJlbWFpbElkIjpudWxsLCJjdXN0b21QdWJsaWNDbGFpbSI6InB1YmxpY1ZhbHVlIn0sImlzcyI6Imlzc3VlciIsImlhdCI6MTY4ODU1MzgwNX0=.lAy/bq54d8d+VBH4s8TjL9RI6AathbFkEIymKA0zJ/A=";
+        //httpServletRequest.setHeader("Authorization", "Bearer " + token);
         Mockito.when(employeeRepository.findAll()).thenReturn(employees);
 
-        List<Employee> result = employeeService.getAllEmployees();
+        List<Employee> result = employeeService.getAllEmployees(httpServletRequest);
 
         assertEquals(2, result.size());
         assertEquals(1, result.get(0).getId());
